@@ -12,7 +12,7 @@ describe('GetUserUseCase', () => {
 
   const userRepositoryMock: jest.Mocked<UserRepository> = {
     findById: jest.fn(),
-  };
+  } as unknown as jest.Mocked<UserRepository>;
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -27,6 +27,10 @@ describe('GetUserUseCase', () => {
 
     useCase = moduleRef.get<GetUserUseCase>(GetUserUseCase);
     userRepository = moduleRef.get<jest.Mocked<UserRepository>>(UserRepository);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
