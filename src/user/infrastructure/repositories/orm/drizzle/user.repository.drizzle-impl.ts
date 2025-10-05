@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { db } from 'src/db/db';
-import { user } from 'src/db/schemas/auth-schema';
+import { user as userSchema } from 'src/db/schemas/auth-schema';
 import { User } from 'src/user/domain/user';
 import { UserRepository } from 'src/user/ports/repositories/user.repository.port';
 
@@ -10,10 +10,10 @@ export class UserRepositoryDrizzleImpl implements UserRepository {
   constructor() {}
 
   async findById(id: string): Promise<User | null> {
-    const drizzleUsers = await db
+    const drizzleUsers = await this.db
       .select()
-      .from(user)
-      .where(eq(user.id, id))
+      .from(userSchema)
+      .where(eq(userSchema.id, id))
       .limit(1)
       .execute();
 
@@ -29,5 +29,17 @@ export class UserRepositoryDrizzleImpl implements UserRepository {
       updatedAt: drizzleUser.updatedAt,
     });
     return userEntity;
+  }
+
+  async updateUser(id: string, user: User): Promise<void> {
+    const data = {
+      name: user.getName(),
+    };
+
+    await this.db
+      .update(userSchema)
+      .set(data)
+      .where(eq(userSchema.id, id))
+      .execute();
   }
 }
